@@ -51,7 +51,7 @@ void decideHunterMove(HunterView gameState)
         else if(player == PLAYER_MINA_HARKER)
         {moveTo = BELGRADE;}
         
-    }else if (round % 6 == 0){
+    }else if (round % 5 == 0){ //trying something..
         moveTo=currentLocation;
         msg="Resting";
     }
