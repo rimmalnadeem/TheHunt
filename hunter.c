@@ -51,7 +51,7 @@ void decideHunterMove(HunterView gameState)
         else if(player == PLAYER_MINA_HARKER)
         {moveTo = BELGRADE;}
         
-    }else if (round % 6 == 0){
+    }else if (round % 6 == 0 || (round % 6==1 && player==PLAYER_LORD_GODALMING){ //resting sequence starts from the second player, so that when the (6th) location is revealed it is available for atleast 4 players before it falls off the trail
         moveTo=currentLocation;
         msg="Resting";
     }
