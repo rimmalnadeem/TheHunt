@@ -11,6 +11,7 @@
 static int moveRandomly(HunterView gameState);
 LocationID lastLocationOfDracula(HunterView gameState);
 
+
 /*Intial Basic Stratergies:
  *-Obtain the latest known dracula move to a legit place(not just 'SEA' or 'LAND')
  *-Find the closest city to that place from our whereCanIgo locations trail
@@ -29,6 +30,7 @@ void decideHunterMove(HunterView gameState)
     int my_trail[TRAIL_SIZE];
     int drac_trail[TRAIL_SIZE];
     int moveTo=UNKNOWN_LOCATION;
+    int bestMove = 0;
     Map map=newMap();
     srand(time(NULL));
     char *msg="";
@@ -37,9 +39,9 @@ void decideHunterMove(HunterView gameState)
     giveMeTheTrail(gameState,player,my_trail);
     giveMeTheTrail(gameState,PLAYER_DRACULA,drac_trail);
     LocationID lastDracLocation= lastLocationOfDracula(gameState);
-    
-    
-    
+
+    LocationID *possibleMoves = (LocationID *)(malloc(sizeof(LocationID)*NUM_MAP_LOCATIONS));
+        
     if (round == 0) {
         msg="Starting\n";
         if(player == PLAYER_LORD_GODALMING)
@@ -51,7 +53,7 @@ void decideHunterMove(HunterView gameState)
         else if(player == PLAYER_MINA_HARKER)
         {moveTo = BELGRADE;}
         
-    }else if (round % 6 == 0 || (round % 6==1 && player==PLAYER_LORD_GODALMING){ //resting sequence starts from the second player, so that when the (6th) location is revealed it is available for atleast 4 players before it falls off the trail
+    }else if (round % 6 == 0 || (round % 6==1 && player==PLAYER_LORD_GODALMING)){ //resting sequence starts from the second player, so that when the (6th) location is revealed it is available for atleast 4 players before it falls off the trail
         moveTo=currentLocation;
         msg="Resting";
     }
@@ -65,9 +67,30 @@ void decideHunterMove(HunterView gameState)
             msg="Following Dracula";
         }
         else {
-            moveTo=moveRandomly(gameState);
-            msg="Random";
+
+            int i = 0;
+
+            for (i = 0; i < TRAIL_SIZE; i++){
+                possibleMoves[i] = -1;
+            }
+
+            //fill possibleMoves array with possibleLocations
+            possibleMoves = possibleLocations;
+
+            for (i = 0; i < NUM_MAP_LOCATIONS; i++) {
+                if (possibleMoves[i] != currentLocation) {
+                    bestMove = possibleMoves[i];
+                    registerBestPlay(idToAbbrev(bestMove),msg);
+                    return;
+                }
+                i++;
+            }
+
+            free(possibleMoves);
         }
+
+        moveTo=moveRandomly(gameState);
+        msg="Random";
     }
     
     // printf("health of player %d is %d\n",player,howHealthyIs(gameState, player));
@@ -86,7 +109,6 @@ LocationID lastLocationOfDracula(HunterView gameState) {
     
     LocationID draculaTrail[TRAIL_SIZE];
     giveMeTheTrail(gameState, PLAYER_DRACULA, draculaTrail);
-    
     int i;
     for (i = 0; i < TRAIL_SIZE; i++) {
         if (draculaTrail[i] >= MIN_MAP_LOCATION && draculaTrail[i] <= MAX_MAP_LOCATION) {
@@ -104,3 +126,4 @@ static int moveRandomly(HunterView gameState)
     //   printf("Random Location %d\n",locs[r]);
     return locs[r];
 }
+
