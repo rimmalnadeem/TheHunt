@@ -30,7 +30,6 @@ void decideHunterMove(HunterView gameState)
     int my_trail[TRAIL_SIZE];
     int drac_trail[TRAIL_SIZE];
     int moveTo=UNKNOWN_LOCATION;
-    int bestMove = 0;
     Map map=newMap();
     srand(time(NULL));
     char *msg="";
@@ -40,7 +39,6 @@ void decideHunterMove(HunterView gameState)
     giveMeTheTrail(gameState,PLAYER_DRACULA,drac_trail);
     LocationID lastDracLocation= lastLocationOfDracula(gameState);
 
-    LocationID *possibleMoves = (LocationID *)(malloc(sizeof(LocationID)*NUM_MAP_LOCATIONS));
         
     if (round == 0) {
         msg="Starting\n";
@@ -67,30 +65,12 @@ void decideHunterMove(HunterView gameState)
             msg="Following Dracula";
         }
         else {
-
-            int i = 0;
-
-            for (i = 0; i < TRAIL_SIZE; i++){
-                possibleMoves[i] = -1;
-            }
-
-            //fill possibleMoves array with possibleLocations
-            possibleMoves = possibleLocations;
-
-            for (i = 0; i < NUM_MAP_LOCATIONS; i++) {
-                if (possibleMoves[i] != currentLocation) {
-                    bestMove = possibleMoves[i];
-                    registerBestPlay(idToAbbrev(bestMove),msg);
-                    return;
-                }
-                i++;
-            }
-
-            free(possibleMoves);
+            moveTo=moveRandomly(gameState);
+            msg="Random";
+         
         }
 
-        moveTo=moveRandomly(gameState);
-        msg="Random";
+    
     }
     
     // printf("health of player %d is %d\n",player,howHealthyIs(gameState, player));
